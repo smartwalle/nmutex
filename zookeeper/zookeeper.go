@@ -7,24 +7,24 @@ import (
 )
 
 const (
-	kPrefix = "/lock/"
+	kPrefix = "/mutex/"
 )
 
 type session struct {
-	key  string
-	conn *zk.Conn
-	acl  []zk.ACL
+	domain string
+	conn   *zk.Conn
+	acl    []zk.ACL
 }
 
-func NewSession(key string, conn *zk.Conn, acl []zk.ACL) nmutex.Session {
+func NewSession(domain string, conn *zk.Conn, acl []zk.ACL) nmutex.Session {
 	var s = &session{}
-	s.key = key
+	s.domain = domain
 	s.conn = conn
 	s.acl = acl
 	return s
 }
 
 func (this *session) NewMutex(key string) nmutex.Mutex {
-	var nPath = path.Join(kPrefix, this.key, key)
+	var nPath = path.Join("/", this.domain, kPrefix, key)
 	return zk.NewLock(this.conn, nPath, this.acl)
 }
